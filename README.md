@@ -1,7 +1,5 @@
-# memoize-weak
-[![npm version](https://img.shields.io/npm/v/memoize-weak.svg)](https://www.npmjs.com/package/memoize-weak)
-![Stability](https://img.shields.io/badge/stability-stable-brightgreen.svg)
-[![Build Status](https://travis-ci.org/timkendrick/memoize-weak.svg?branch=master)](https://travis-ci.org/timkendrick/memoize-weak)
+# memoize-weak-promise
+[![npm version](https://img.shields.io/npm/v/memoize-weak-promise.svg)](https://www.npmjs.com/package/memoize-weak-promise)
 
 > Garbage-collected memoizer for variadic async functions
 
