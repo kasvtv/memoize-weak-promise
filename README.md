@@ -3,29 +3,44 @@
 ![Stability](https://img.shields.io/badge/stability-stable-brightgreen.svg)
 [![Build Status](https://travis-ci.org/timkendrick/memoize-weak.svg?branch=master)](https://travis-ci.org/timkendrick/memoize-weak)
 
-> Garbage-collected memoizer for variadic functions
+> Garbage-collected memoizer for variadic async functions
 
 ## Installation
 
 ```bash
-npm install memoize-weak
+npm install memoize-weak-promise
 ```
 
 ## Example
 
 ```js
-import memoize from 'memoize-weak';
+import memoize from 'memoize-weak-promise';
 
-let foo = { foo: true };
-let bar = { bar: true };
-let baz = { baz: true };
+var wrap0 = {value: 0};
+var wrap1 = {value: 1};
 
-const fn = memoize((...args) => args); // Create a memoized function
+const fn = memoize(a => new Promise(function rejectIfOdd(res, rej) {
+    if (a.value % 2 === 1) setTimeout(() => rej(a.value), 1000);
+    else setTimeout(() => res(a.value), 1000);
+})); // Create a memoized function
 
-fn(foo, bar, baz); // Returns [{ foo: true }, { bar: true }, { baz: true }]
-fn(foo, bar, baz); // Returns cached result
+var promise0 = fn(wrap0); // Returns a promise that will resolve to 0
+var promise1 = fn(wrap1); // Returns a promise that will reject to 1
 
-foo = bar = baz = undefined; // Original foo, bar and baz are now eligible for garbage collection
+/* Will return cached versions if promises are pending: */
+promise0 === fn(wrap0) // true
+promise1 === fn(wrap1) // true
+
+/* Will not cache rejected promises */
+setTimeout(() => {
+  promise0 === fn(wrap0) // true
+  promise1 === fn(wrap1) // false, because the promise rejected
+}, 1001);
+
+/* Original foo, bar and baz are now eligible for garbage collection: */
+setTimeout(() => {
+  wrap0 = wrap1 = undefined;
+}, 1002);
 ```
 
 ## Features
@@ -33,6 +48,7 @@ foo = bar = baz = undefined; // Original foo, bar and baz are now eligible for g
 - Memoizes multiple arguments of any type
 - Previous arguments are automatically garbage-collected when no longer referenced elsewhere
 - No external dependencies
+- Will not cache promises if they fail
 - Compatible with ES5 and up
 
 ## How does `memoize-weak` differ from other memoize implementations?
