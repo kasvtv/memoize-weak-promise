@@ -1,7 +1,7 @@
 {
-  "name": "memoize-weak",
-  "version": "1.0.2",
-  "description": "Garbage-collected memoizer for variadic functions",
+  "name": "memoize-weak-promise",
+  "version": "1.0.0",
+  "description": "Garbage-collected memoizer for variadic async functions",
   "main": "index.js",
   "directories": {
     "lib": "lib",
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/timkendrick/memoize-weak.git"
+    "url": "git+https://github.com/kasvtv/memoize-weak-promise.git"
   },
   "keywords": [
     "memoize",
@@ -24,12 +24,12 @@
     "weakmap",
     "garbage"
   ],
-  "author": "Tim Kendrick <timkendrick@gmail.com>",
+  "author": "Kas van 't Veer <kasvantveer@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/timkendrick/memoize-weak/issues"
+    "url": "https://github.com/kasvtv/memoize-weak-promise/issues"
   },
-  "homepage": "https://github.com/timkendrick/memoize-weak#readme",
+  "homepage": "https://github.com/kasvtv/memoize-weak-promise#readme",
   "dependencies": {},
   "devDependencies": {
     "chai": "^3.5.0",
