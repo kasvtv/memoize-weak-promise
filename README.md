@@ -35,7 +35,7 @@ setTimeout(() => {
   promise1 === fn(wrap1) // false, because the promise rejected
 }, 1001);
 
-/* Original foo, bar and baz are now eligible for garbage collection: */
+/* Original arguments are now eligible for garbage collection: */
 setTimeout(() => {
   wrap0 = wrap1 = undefined;
 }, 1002);
