@@ -1,6 +1,6 @@
 {
   "name": "memoize-weak-promise",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Garbage-collected memoizer for variadic async functions",
   "main": "index.js",
   "directories": {

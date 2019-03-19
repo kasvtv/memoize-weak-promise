@@ -41,6 +41,23 @@ setTimeout(() => {
 }, 1002);
 ```
 
+## API
+
+### function(fn [, options]) -> memoizedFn
+
+Memoize a given function
+
+#### arguments
+- **fn** *(function)*: The function to memoize
+- **options** *(Object)*:
+  - **weak** *(boolean)*: Use weak references if possible (defaults to true)
+  - **once** *(boolean)*: Only memoize one result
+
+#### returns
+- **memoizedFn** *(function)*: Promise that once the request finalizes will resolve in case of an OK status and reject in all other cases.
+  - **clear** *(function(...args))*: Clear cached result for any arguments, or clear entire cache if no arguments provided
+
+
 ## Features
 
 - Memoizes multiple arguments of any type
