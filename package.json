@@ -12,7 +12,7 @@
     "lib"
   ],
   "scripts": {
-    "test": "eslint index.js test lib && mocha --reporter spec"
+    "test": "mocha --reporter spec"
   },
   "repository": {
     "type": "git",
