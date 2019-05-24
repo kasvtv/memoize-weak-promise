@@ -972,4 +972,175 @@ describe('memoize', () => {
       });
     });
   });
+
+  describe('GIVEN an ASYNCHRONOUS memoized function', () => {
+    let fn;
+    let memoized;
+    let resolveLast;
+    let rejectLast;
+
+    const args = [{ foo: true }, { bar: true }, { baz: true }];
+
+    beforeEach(() => {
+      fn = spy(() => new Promise((res, rej) => {
+        resolveLast = res;
+        rejectLast = rej;
+      }));
+      memoized = memoize(fn);
+    });
+
+    describe('AND it calls resolve', () => {
+      it('the promise returned SHOULD resolve to the same value', async () => {
+        const prom = memoized();
+        resolveLast(args);
+        const result = await prom;
+
+        expect(result).to.equal(args);
+      });
+    });
+
+    describe('AND it calls reject', () => {
+      it('the promise returned SHOULD reject to the same value', async () => {
+        const prom = memoized();
+        const newError = new Error();
+
+        rejectLast(newError);
+
+        try {
+          await prom;
+          throw new Error('should reject instead');
+        } catch (e) {
+          expect(e).to.equal(newError);
+        }
+      });
+    });
+
+    describe('AND it is called multiple times with the same arguments', () => {
+      let firstCall;
+      let secondCall;
+
+      beforeEach(() => {
+        firstCall = memoized(args);
+        secondCall = memoized(args);
+      });
+
+      it('SHOULD return a memoized result', () => {
+        expect(firstCall).to.equal(secondCall);
+        expect(fn.callCount).to.equal(1);
+      });
+
+      it('SHOULD return a memoized result if it resolved in between', async () => {
+        resolveLast();
+
+        await firstCall;
+
+        const thirdCall = memoized(args);
+        expect(firstCall).to.equal(thirdCall);
+        expect(fn.callCount).to.equal(1);
+      });
+
+      it('SHOULD NOT return a memoized result if it rejected in between', async () => {
+        rejectLast();
+
+        await firstCall.catch(() => {});
+
+        const thirdCall = memoized(args);
+        expect(firstCall).to.not.equal(thirdCall);
+        expect(fn.callCount).to.equal(2);
+      });
+    });
+
+    describe('AND it is called multiple times with the different arguments', () => {
+      let firstCall;
+      let secondCall;
+
+      const otherArgs = [...args.slice(0, -1), {}];
+
+      beforeEach(() => {
+        firstCall = memoized(args);
+        secondCall = memoized(otherArgs);
+      });
+
+      it('SHOULD never return a memoized result', () => {
+        expect(firstCall).to.not.equal(secondCall);
+        expect(fn.callCount).to.equal(2);
+      });
+    });
+  });
+
+  describe('GIVEN a memoized function with options {once: true}', () => {
+    let fn;
+    let memoized;
+
+    const args = [{ foo: true }, { bar: true }, { baz: true }];
+    const otherArgs = [...args.slice(0, -1), {}];
+
+    beforeEach(() => {
+      fn = spy(() => new Promise(() => {}));
+      memoized = memoize(fn, { once: true });
+    });
+
+    describe('AND it is called multiple times with the same arguments', () => {
+      it('SHOULD return a memoized result', () => {
+        const firstCall = memoized(args);
+        const secondCall = memoized(args);
+
+        expect(firstCall).to.equal(secondCall);
+        expect(fn.callCount).to.equal(1);
+      });
+
+      it('SHOULD NOT return a memoized result if it was called in between with different arguments', () => {
+        const firstCall = memoized(args);
+        const betweenCall = memoized(otherArgs);
+        const secondCall = memoized(args);
+
+        expect(firstCall).to.not.equal(secondCall);
+        expect(betweenCall).to.not.equal(secondCall);
+        expect(fn.callCount).to.equal(3);
+      });
+    });
+  });
+
+  describe('GIVEN a memoized function with options {weak: false}', () => {
+    let fn;
+    let memoized;
+
+    const args = [{ foo: true }, { bar: true }, { baz: true }];
+    const otherArgs = [...args.slice(0, -1), {}];
+
+    beforeEach(() => {
+      fn = spy(() => new Promise(() => {}));
+      memoized = memoize(fn, { weak: false });
+    });
+
+    describe('AND it is called multiple times with the same arguments', () => {
+      it('SHOULD return a memoized result', () => {
+        const firstCall = memoized(args);
+        const secondCall = memoized(args);
+
+        expect(firstCall).to.equal(secondCall);
+        expect(fn.callCount).to.equal(1);
+      });
+
+      it('SHOULD STILL return a memoized result if it was called in between with different arguments', () => {
+        const firstCall = memoized(args);
+        const betweenCall = memoized(otherArgs);
+        const secondCall = memoized(args);
+
+        expect(firstCall).to.equal(secondCall);
+        expect(betweenCall).to.not.equal(secondCall);
+        expect(fn.callCount).to.equal(2);
+      });
+    });
+
+    describe('AND it is called multiple times with different arguments', () => {
+      it('SHOULD NOT return a memoized result', () => {
+        const firstCall = memoized(args);
+        const secondCall = memoized(otherArgs);
+
+        expect(firstCall).to.not.equal(secondCall);
+        expect(fn.callCount).to.equal(2);
+      });
+    });
+  });
 });
