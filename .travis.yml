@@ -1,3 +1,3 @@
 language: node_js
 node_js: lts/*
-script: npm test -- --coverage --coverageReporters=text-lcov | npx coveralls
+after_script: npx istanbul@0.4.5 cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | npx coveralls
