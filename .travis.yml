@@ -1,4 +1,3 @@
 language: node_js
-node_js:
-  - "6"
-  - "stable"
+node_js: lts/*
+script: npm test -- --coverage --coverageReporters=text-lcov | npx coveralls
